@@ -232,7 +232,13 @@ body {
   <li>切换到其他应用超过 3 次将自动交卷</li><li>可考 3 次，成绩取最高分；合格后计 1 学时并发放电子证书</li></ul></div>
 <div class="pledge" data-toast="已确认考试承诺"><i class="c"><i data-lucide="check" width="12" height="12"></i></i><span>我承诺独立完成考试，不查阅资料、不代考、不传播试题。</span></div>
 </main>
-<div class="bottom-bar"><span class="small muted" style="width:90px">剩余 <b class="blue">3</b> 次</span><a class="btn" href="exam-answer.html">开始考试</a></div>
+<div class="bottom-bar"><span class="small muted" style="width:90px">剩余 <b class="blue">3</b> 次</span><a class="btn" data-open="face">开始考试</a></div>
+<div class="mask" id="face"><div class="dialog"><a class="dlg-x" data-close><i data-lucide="x" width="18" height="18"></i></a>
+<h3>人脸核验</h3>
+<p>进入考试前核验身份。此处为示意，不另做独立菜单。</p>
+<div style="height:160px;border-radius:16px;background:#12263A;margin:8px 0 12px;display:grid;place-items:center;color:#9FD0FF"><i data-lucide="scan-face" width="48" height="48"></i></div>
+<p class="small muted" id="face-tip">请正对屏幕，点击开始核验。</p>
+<a class="btn" id="face-go" href="exam-answer.html">开始核验</a></div></div>
 </div>
 <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 <script>
@@ -348,6 +354,15 @@ function pickChip(fc) {
 document.addEventListener('focusout', e => {
   const v = e.target.closest('.field .v[contenteditable]');
   if (v && !v.textContent.trim()) { v.removeAttribute('contenteditable'); v.textContent = v.dataset.ph; v.classList.add('ph'); }
+});
+</script><script>
+document.getElementById('face-go').addEventListener('click', function (e) {
+  var tip = document.getElementById('face-tip');
+  if (tip.dataset.ok) return;
+  e.preventDefault();
+  tip.dataset.ok = '1';
+  tip.textContent = '核验通过，正在进入考试…';
+  setTimeout(function () { location.href = 'exam-answer.html'; }, 700);
 });
 </script>
 <script>lucide.createIcons();</script>

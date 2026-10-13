@@ -221,6 +221,17 @@ body {
 .courses small { display: flex; justify-content: space-between; color: var(--t2); font-weight: 400; margin-top: 4px; }
 .shortcuts .grid4 { position: relative; z-index: 1; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 2px; }
 .shortcuts .entry { white-space: nowrap; line-height: 1.2; padding: 4px 0; min-width: 0; width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+.shortcuts.no-train .need-train { display: none; }
+.shortcuts.no-train .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hmode { display: flex; gap: 8px; margin: 0 0 10px; }
+.hmode span { flex: 1; text-align: center; font-size: 12px; padding: 6px 0; border-radius: 14px; background: rgba(255,255,255,.55); color: #245; }
+.hmode span.on { background: #fff; color: var(--p); font-weight: 700; }
+.qbtn { position: absolute; right: 104px; top: 6px; width: 32px; height: 32px; border-radius: 16px; background: rgba(255,255,255,.22); display: grid; place-items: center; color: #fff; z-index: 4; cursor: pointer; }
+.qmenu { position: absolute; right: 8px; top: 46px; width: 168px; background: #fff; border-radius: 14px; box-shadow: 0 12px 28px rgba(4,50,160,.18); padding: 6px; z-index: 6; display: none; }
+.qmenu.show { display: block; }
+.qmenu a { display: flex; align-items: center; gap: 8px; padding: 9px 8px; border-radius: 10px; font-size: 14px; color: var(--t1); }
+.qmenu a:active { background: #F2F7FF; }
+.rec-tag { position: absolute; left: 12px; top: 12px; background: rgba(255,255,255,.92); color: var(--p); font-size: 11px; font-weight: 700; border-radius: 10px; padding: 2px 8px; }
 </style>
 </head>
 <body>
@@ -229,7 +240,7 @@ body {
   <div class="info">
     <b>MP-03 首页</b>
     角色：普通用户（教职工 / 学生）<br>所属导航：首页
-    <span class="k">页面元素</span>搜索框、轮播图、通知滚动栏、本年学时进度卡片、待办提醒条、四宫格快捷入口、推荐课程、最新案例
+    <span class="k">页面元素</span>搜索框、推荐轮播、通知滚动栏、学时进度、考试提醒、快捷入口、右上角快捷按钮、有无培训切换
     <span class="k">主要操作</span>搜索；点击轮播；扫码签到；进入各入口
     <span class="k">状态说明</span>无通知时隐藏滚动栏；无待办时隐藏提醒条；网络异常重试
   </div>
@@ -237,38 +248,34 @@ body {
 <div class="phone">
 <div class="sky"></div>
 <div class="status"><span>9:41</span><span class="sig"><i data-lucide="signal" width="16" height="16"></i><i data-lucide="wifi" width="16" height="16"></i><i data-lucide="battery-full" width="20" height="20"></i></span></div>
-<div class="navbar">保密学习平台<div class="capsule"><b>···</b><i></i></div></div>
+<div class="navbar">保密学习平台<span class="qbtn" id="qbtn"><i data-lucide="layout-grid" width="16" height="16"></i></span>
+<div class="qmenu" id="quick">
+  <a href="checkin.html"><span class="ico" style="width:28px;height:28px"><i data-lucide="scan-line" width="16" height="16"></i></span>扫码签到</a>
+  <a href="trainings.html"><span class="ico cyan" style="width:28px;height:28px"><i data-lucide="calendar-plus" width="16" height="16"></i></span>培训报名</a>
+  <a href="learning.html"><span class="ico purple" style="width:28px;height:28px"><i data-lucide="book-open" width="16" height="16"></i></span>在线学习</a>
+  <a href="notices.html"><span class="ico orange" style="width:28px;height:28px"><i data-lucide="bell" width="16" height="16"></i></span>通知公告</a>
+</div><div class="capsule"><b>···</b><i></i></div></div>
 <main class="content">
+<div class="hmode"><span class="on" data-mode="on">当前有线下培训</span><span data-mode="off">暂无培训</span></div>
 <a class="search" href="search.html"><i data-lucide="search" width="17" height="17"></i>搜索法律法规、案例、课程</a>
 <a class="banner" style="display:block" href="training-detail.html"><img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=720&h=320&q=70" alt="保密宣传">
+  <span class="rec-tag">推荐</span>
   <div class="cap"><h2>保密教育 <em>人人有责</em></h2><p>2026 年度涉密人员保密教育专题培训报名中</p></div>
   <div class="dots"><i class="on"></i><i></i><i></i></div></a>
 <a class="notice" href="notices.html"><i data-lucide="bell-ring" width="16" height="16" class="red"></i><span class="txt">关于开展 2026 年度全校保密知识考试的通知</span><span class="small muted">2小时前</span></a>
 <div class="glass shortcuts"><div class="grid4">
-  <a class="entry" href="checkin.html"><span class="ico"><i data-lucide="scan-line" width="22" height="22"></i></span>扫码签到</a>
-  <a class="entry" href="trainings.html"><span class="ico cyan"><i data-lucide="calendar-plus" width="22" height="22"></i></span>培训报名</a>
+  <a class="entry need-train" href="checkin.html"><span class="ico"><i data-lucide="scan-line" width="22" height="22"></i></span>扫码签到</a>
+  <a class="entry need-train" href="trainings.html"><span class="ico cyan"><i data-lucide="calendar-plus" width="22" height="22"></i></span>培训报名</a>
   <a class="entry" href="learning.html"><span class="ico purple"><i data-lucide="book-open" width="22" height="22"></i></span>在线学习</a>
   <a class="entry" href="notices.html"><span class="ico orange"><i data-lucide="bell" width="22" height="22"></i></span>通知公告</a>
 </div></div>
 <a class="card prog" href="my-hours.html">
-  <svg class="ring" width="84" height="84" viewBox="0 0 84 84"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#469FFF"/><stop offset="1" stop-color="#0451EF"/></linearGradient></defs><circle cx="42.0" cy="42.0" r="38.0" fill="none" stroke="#E6EEF9" stroke-width="8"/><circle cx="42.0" cy="42.0" r="38.0" fill="none" stroke="url(#rg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="151.2 238.8" transform="rotate(-90 42.0 42.0)"/><text x="50%" y="44.0" text-anchor="middle" class="ring-v">63%</text><text x="50%" y="60.0" text-anchor="middle" class="ring-s">完成度</text></svg>
-  <div class="grow"><div class="big">本年已获 <b>9.5</b> / 15 学时</div>
-    <div class="small muted" style="margin:4px 0 8px">还差 5.5 学时达标 · 截止 12 月 31 日</div>
+  <svg class="ring" width="84" height="84" viewBox="0 0 84 84"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#469FFF"/><stop offset="1" stop-color="#0451EF"/></linearGradient></defs><circle cx="42.0" cy="42.0" r="38.0" fill="none" stroke="#E6EEF9" stroke-width="8"/><circle cx="42.0" cy="42.0" r="38.0" fill="none" stroke="url(#rg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="143.3 238.8" transform="rotate(-90 42.0 42.0)"/><text x="50%" y="44.0" text-anchor="middle" class="ring-v">60%</text><text x="50%" y="60.0" text-anchor="middle" class="ring-s">完成度</text></svg>
+  <div class="grow"><div class="big">本年计入 <b>9.0</b> / 15 学时</div>
+    <div class="small muted" style="margin:4px 0 8px">线上超出 1.5 不计入 · 截止 12 月 31 日</div>
     <span class="btn sm" style="display:inline-flex">去学习 <i data-lucide="arrow-right" width="14" height="14"></i></span></div>
 </a>
 <a class="todo" href="exams.html"><i data-lucide="alarm-clock" width="16" height="16"></i><b>「2026 年度全校保密知识考试」将于 10 月 31 日截止</b><i data-lucide="chevron-right" width="16" height="16"></i></a>
-<div class="sec-t">推荐课程<em>学习计学时</em><a href="learning.html">更多 <i data-lucide="chevron-right" width="14" height="14"></i></a></div>
-<div class="courses">
-  <a href="course-player.html"><img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=360&h=200&q=70" alt=""><div>高校涉密科研项目保密管理要点<small><span>视频 · 32分钟</span><span class="blue">0.5 学时</span></small></div></a>
-  <a href="article-reader.html"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=360&h=200&q=70" alt=""><div>办公网络与信息设备保密常识<small><span>文档 · 12页</span><span class="blue">0.3 学时</span></small></div></a>
-  <a href="course-player.html"><img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=360&h=200&q=70" alt=""><div>涉外交流中的保密注意事项<small><span>视频 · 25分钟</span><span class="blue">0.5 学时</span></small></div></a>
-</div>
-<div class="sec-t">最新案例<a href="learning-cases.html">更多 <i data-lucide="chevron-right" width="14" height="14"></i></a></div>
-<div class="card" style="padding:4px 16px">
-  <a class="row" href="case-detail.html"><span class="ico red"><i data-lucide="message-circle-warning" width="20" height="20"></i></span><div class="grow"><div class="tt">违规使用微信传输涉密文件案</div><div class="ds">网络泄密 · 阅读计 0.2 学时</div></div><span class="arrow"><i data-lucide="chevron-right" width="18" height="18"></i></span></a>
-  <a class="row" href="case-detail.html"><span class="ico orange"><i data-lucide="cloud-off" width="20" height="20"></i></span><div class="grow"><div class="tt">科研人员网盘分享项目资料泄密案</div><div class="ds">网络泄密 · 10月8日</div></div><span class="arrow"><i data-lucide="chevron-right" width="18" height="18"></i></span></a>
-  <a class="row" href="case-detail.html"><span class="ico purple"><i data-lucide="book-x" width="20" height="20"></i></span><div class="grow"><div class="tt">学位论文发表涉及涉密内容案</div><div class="ds">论文发表 · 9月26日</div></div><span class="arrow"><i data-lucide="chevron-right" width="18" height="18"></i></span></a>
-</div>
 </main>
 <nav class="tabbar"><a class="tab on" href="home.html"><span class="ti"><i data-lucide="house" width="19" height="19"></i></span>首页</a><a class="tab" href="learning.html"><span class="ti"><i data-lucide="book-open" width="19" height="19"></i></span>学习</a><a class="tab" href="trainings.html"><span class="ti"><i data-lucide="clipboard-check" width="19" height="19"></i></span>培训考试</a><a class="tab" href="profile.html"><span class="ti"><i data-lucide="user-round" width="19" height="19"></i></span>我的</a></nav>
 </div>
@@ -386,6 +393,21 @@ function pickChip(fc) {
 document.addEventListener('focusout', e => {
   const v = e.target.closest('.field .v[contenteditable]');
   if (v && !v.textContent.trim()) { v.removeAttribute('contenteditable'); v.textContent = v.dataset.ph; v.classList.add('ph'); }
+});
+</script><script>
+document.getElementById('qbtn').addEventListener('click', function (e) {
+  e.preventDefault(); e.stopPropagation();
+  document.getElementById('quick').classList.toggle('show');
+});
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('#quick') && !e.target.closest('#qbtn')) document.getElementById('quick').classList.remove('show');
+});
+document.querySelectorAll('.hmode span').forEach(function (el) {
+  el.addEventListener('click', function () {
+    document.querySelectorAll('.hmode span').forEach(function (s) { s.classList.remove('on'); });
+    el.classList.add('on');
+    document.querySelector('.shortcuts').classList.toggle('no-train', el.dataset.mode === 'off');
+  });
 });
 </script>
 <script>lucide.createIcons();</script>
