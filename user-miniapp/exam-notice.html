@@ -207,6 +207,28 @@ body {
 .rules li::before { content: ""; position: absolute; left: 4px; top: 14px; width: 7px; height: 7px; border-radius: 50%; background: var(--p3); }
 .pledge { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--t2); padding: 4px 4px 0; }
 .pledge i.c { width: 18px; height: 18px; border-radius: 4px; background: var(--p); color: #fff; display: grid; place-items: center; flex-shrink: 0; }
+
+/* 新手引导：遮罩聚光灯只盖在手机框内 */
+.guide { position: absolute; inset: 0; z-index: 80; visibility: hidden; pointer-events: none; user-select: none; }
+.guide.on { visibility: visible; pointer-events: auto; }
+.guide-spot { position: absolute; z-index: 1; pointer-events: none; background: transparent;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.95), 0 0 0 2400px rgba(7, 16, 36, .66); }
+.guide-line { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; overflow: visible; }
+.guide-pop { position: absolute; z-index: 3; display: flex; flex-direction: column; width: 286px; max-width: calc(100% - 28px); }
+.guide-mascot { width: 46px; height: 46px; flex: none; align-self: flex-start; }
+.guide-mascot svg { display: block; width: 46px; height: 46px; filter: drop-shadow(0 4px 8px rgba(4, 30, 90, .3)); }
+.guide-pop.below .guide-mascot { order: 0; margin-bottom: 6px; }
+.guide-pop.above .guide-mascot { order: 3; margin-top: 6px; }
+.guide-bubble { order: 1; width: 100%; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 14px; font-weight: 500; line-height: 1.5;
+  padding: 12px 14px 12px 16px; border-radius: 20px; background: linear-gradient(90deg, #3A8DFF, #1563F6);
+  box-shadow: 0 8px 18px rgba(12, 60, 180, .24); }
+.guide-bubble #gbubble { flex: 1; min-width: 0; }
+.guide-acts { order: 2; width: 100%; display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.guide-step { flex: none; font-size: 12px; font-weight: 700; letter-spacing: .4px; color: rgba(255,255,255,.92); font-variant-numeric: tabular-nums; }
+.guide-skip, .guide-next { font-family: inherit; font-size: 14px; line-height: 1; cursor: pointer; border: 0; height: 34px; border-radius: 17px; }
+.guide-skip { padding: 0 14px; color: #fff; font-weight: 600; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.88); }
+.guide-next { padding: 0 16px; min-width: 76px; color: #0451EF; font-weight: 700; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,.14); }
+.guide-next:active, .guide-skip:active { transform: translateY(1px); }
 </style>
 </head>
 <body>
@@ -232,13 +254,30 @@ body {
   <li>切换到其他应用超过 3 次将自动交卷</li><li>可考 3 次，成绩取最高分；合格后计 1 学时并发放电子证书</li></ul></div>
 <div class="pledge" data-toast="已确认考试承诺"><i class="c"><i data-lucide="check" width="12" height="12"></i></i><span>我承诺独立完成考试，不查阅资料、不代考、不传播试题。</span></div>
 </main>
-<div class="bottom-bar"><span class="small muted" style="width:90px">剩余 <b class="blue">3</b> 次</span><a class="btn" data-open="face">开始考试</a></div>
+<div class="bottom-bar"><span class="small muted" style="width:90px">剩余 <b class="blue">3</b> 次</span><a class="btn" id="g-start" data-open="face">开始考试</a></div>
 <div class="mask" id="face"><div class="dialog"><a class="dlg-x" data-close><i data-lucide="x" width="18" height="18"></i></a>
 <h3>人脸核验</h3>
 <p>进入考试前核验身份。此处为示意，不另做独立菜单。</p>
 <div style="height:160px;border-radius:16px;background:#12263A;margin:8px 0 12px;display:grid;place-items:center;color:#9FD0FF"><i data-lucide="scan-face" width="48" height="48"></i></div>
 <p class="small muted" id="face-tip">请正对屏幕，点击开始核验。</p>
-<a class="btn" id="face-go" href="exam-answer.html">开始核验</a></div></div>
+<a class="btn" id="face-go" href="exam-answer.html">开始核验</a></div></div><div class="guide" id="guide" role="dialog" aria-modal="true" aria-hidden="true" aria-label="新手功能引导">
+  <div class="guide-spot" id="gspot"></div>
+  <svg class="guide-line" id="gline" aria-hidden="true"></svg>
+  <div class="guide-pop below" id="gpop">
+    <div class="guide-mascot" id="gmascot"><svg viewBox="0 0 64 64" aria-hidden="true">
+      <defs><linearGradient id="ngFace" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6AADFF"/><stop offset="1" stop-color="#0451EF"/></linearGradient></defs>
+      <circle cx="32" cy="36" r="20" fill="#fff"/>
+      <rect x="14" y="27" width="36" height="20" rx="10" fill="url(#ngFace)"/>
+      <circle cx="24" cy="37" r="3.1" fill="#fff"/><circle cx="40" cy="37" r="3.1" fill="#fff"/>
+      <rect x="30.7" y="13" width="2.6" height="9" rx="1.3" fill="#0451EF"/>
+      <circle cx="32" cy="11.5" r="3.3" fill="#469FFF" stroke="#fff" stroke-width="1.3"/>
+      <rect x="9" y="33" width="5" height="9" rx="2" fill="#D5E5FF"/>
+      <rect x="50" y="33" width="5" height="9" rx="2" fill="#D5E5FF"/>
+    </svg></div>
+    <div class="guide-bubble"><span id="gbubble"></span><span class="guide-step" id="gstep">1/12</span></div>
+    <div class="guide-acts"><button type="button" class="guide-skip" id="gskip">跳过</button><button type="button" class="guide-next" id="gnext">下一步</button></div>
+  </div>
+</div>
 </div>
 <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 <script>
@@ -364,6 +403,187 @@ document.getElementById('face-go').addEventListener('click', function (e) {
   tip.textContent = '核验通过，正在进入考试…';
   setTimeout(function () { location.href = 'exam-answer.html'; }, 700);
 });
+</script><script>
+(function () {
+  var SEEN = 'mp-guide-home';
+  var ACTIVE = 'mp-guide-active';
+  var STEPKEY = 'mp-guide-step';
+  var GAP = 28;
+  var PAGE = location.pathname.split('/').pop() || 'home.html';
+  var STEPS = [
+    { page: 'home.html', sel: '#qbtn', text: '常用功能也可以从这里打开：<br>扫码签到、培训报名、在线学习。', pad: 5, radius: 20, side: 'below' },
+    { page: 'home.html', sel: 'a.search', text: '搜索法律法规、案例、课程。', pad: 4, radius: 22, side: 'below' },
+    { page: 'home.html', sel: 'a.prog', text: '本年计入学时和年度目标；<br>超出上限的只显示不计入。', pad: 6, radius: 16, side: 'above' },
+    { page: 'home.html', sel: '.tabbar a[href="learning.html"]', text: '推荐课程和按级别学习在学习页。', pad: 2, radius: 16, side: 'above' },
+    { page: 'home.html', sel: '.tabbar a[href="trainings.html"]', text: '培训报名和考试都在这里。', pad: 2, radius: 16, side: 'above' },
+    { page: 'trainings.html', sel: '#g-train', fallback: 'a.tr', text: '点进培训查看时间、地点并报名。', pad: 6, radius: 16, side: 'below' },
+    { page: 'training-detail.html', sel: '#g-enroll', fallback: '.bottom-bar a.btn', text: '报名后可在「我的培训」查看。', pad: 4, radius: 24, side: 'above' },
+    { page: 'exams.html', sel: '#g-exam', fallback: 'a.ex', text: '在开放时间内进入考试。', pad: 6, radius: 16, side: 'below' },
+    { page: 'exam-notice.html', sel: '#g-start', fallback: '.bottom-bar a.btn', text: '开始前会做人脸核验，<br>通过后进入答题。', pad: 4, radius: 24, side: 'above' },
+    { page: 'profile.html', sel: '#g-sum', fallback: '.hours', text: '个人学习数据汇总在这里。', pad: 6, radius: 16, side: 'below' },
+    { page: 'profile.html', sel: '#g-records', fallback: '.grid3', text: '学时明细、考试、证书、<br>培训记录都从这里进入。', pad: 8, radius: 14, side: 'above' },
+    { page: 'my-hours.html', sel: '#g-break', fallback: '.src', text: '超出上限的记录仍可查看，<br>但不计入年度目标。', pad: 8, radius: 12, side: 'below' }
+  ];
+  var root = document.getElementById('guide');
+  var spot = document.getElementById('gspot');
+  var line = document.getElementById('gline');
+  var pop = document.getElementById('gpop');
+  var mascot = document.getElementById('gmascot');
+  var bubble = document.getElementById('gbubble');
+  var stepEl = document.getElementById('gstep');
+  var nextBtn = document.getElementById('gnext');
+  var phone = document.querySelector('.phone');
+  var idx = 0;
+  var leaving = false;
+  if (!root || !phone || !nextBtn) return;
+
+  function n(v) { return Math.round(v * 10) / 10; }
+  function edge(sl, st, sw, sh, x, y) {
+    var cx = sl + sw / 2, cy = st + sh / 2;
+    var dx = x - cx, dy = y - cy;
+    if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) return { x: cx, y: st };
+    var s = Math.min((sw / 2) / Math.abs(dx), (sh / 2) / Math.abs(dy));
+    return { x: cx + dx * s, y: cy + dy * s };
+  }
+  function drawLine(W, H, x1, y1, x2, y2) {
+    var dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
+    if (len < 10) { line.innerHTML = ''; return; }
+    var bend = Math.min(14, len * 0.28);
+    var cpx = (x1 + x2) / 2 + (-dy / len) * bend;
+    var cpy = (y1 + y2) / 2 + (dx / len) * bend;
+    line.setAttribute('viewBox', '0 0 ' + n(W) + ' ' + n(H));
+    line.setAttribute('preserveAspectRatio', 'none');
+    line.innerHTML = '<path d="M' + n(x1) + ' ' + n(y1) + ' Q ' + n(cpx) + ' ' + n(cpy) + ' ' + n(x2) + ' ' + n(y2) + '" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="0.8 6.5"/>'
+      + '<circle cx="' + n(x2) + '" cy="' + n(y2) + '" r="2.6" fill="#fff"/>';
+  }
+  function reveal(el) {
+    var scroller = document.querySelector('.content');
+    if (!scroller || !scroller.contains(el)) return;
+    var sr = scroller.getBoundingClientRect();
+    var r = el.getBoundingClientRect();
+    var pad = 12;
+    if (r.top < sr.top + pad) scroller.scrollTop -= (sr.top + pad - r.top);
+    else if (r.height < sr.height - pad * 2 && r.bottom > sr.bottom - pad) scroller.scrollTop += (r.bottom - sr.bottom + pad);
+  }
+  function persist(i) {
+    try {
+      sessionStorage.setItem(SEEN, '1');
+      sessionStorage.setItem(ACTIVE, '1');
+      sessionStorage.setItem(STEPKEY, String(i));
+    } catch (e) {}
+  }
+  function place(i) {
+    var step = STEPS[i];
+    if (!step) return false;
+    var el = document.querySelector(step.sel);
+    if (!el && step.fallback) el = document.querySelector(step.fallback);
+    if (!el) return false;
+    var quick = document.getElementById('quick');
+    if (quick) quick.classList.remove('show');
+    reveal(el);
+    var pr = phone.getBoundingClientRect();
+    var r = el.getBoundingClientRect();
+    var pad = step.pad;
+    var sl = r.left - pr.left - pad;
+    var st = r.top - pr.top - pad;
+    var sw = r.width + pad * 2;
+    var sh = r.height + pad * 2;
+    var W = pr.width, H = pr.height;
+    spot.style.left = n(sl) + 'px';
+    spot.style.top = n(st) + 'px';
+    spot.style.width = n(sw) + 'px';
+    spot.style.height = n(sh) + 'px';
+    spot.style.borderRadius = (step.radius >= 999 ? Math.min(sw, sh) / 2 : step.radius) + 'px';
+    bubble.innerHTML = step.text;
+    stepEl.textContent = (i + 1) + '/' + STEPS.length;
+    nextBtn.textContent = i === STEPS.length - 1 ? '知道了' : '下一步';
+    var popW = Math.min(304, W - 28);
+    pop.style.width = popW + 'px';
+    pop.classList.toggle('below', step.side !== 'above');
+    pop.classList.toggle('above', step.side === 'above');
+    var popH = pop.offsetHeight;
+    function topFor(side) { return side === 'below' ? st + sh + GAP : st - GAP - popH; }
+    function fits(side) { var t = topFor(side); return t >= 12 && t + popH <= H - 12; }
+    var side = step.side;
+    if (!fits(side)) {
+      var other = side === 'below' ? 'above' : 'below';
+      if (fits(other)) side = other;
+    }
+    var top = topFor(side);
+    if (top < 12) top = 12;
+    if (top + popH > H - 12) top = Math.max(12, H - 12 - popH);
+    var cx = sl + sw / 2;
+    var left = Math.max(14, Math.min(cx - popW / 2, W - 14 - popW));
+    pop.classList.toggle('below', side === 'below');
+    pop.classList.toggle('above', side === 'above');
+    pop.style.left = n(left) + 'px';
+    pop.style.top = n(top) + 'px';
+    var mascotLeft = cx - left - 23;
+    var roomR = popW - 46 - mascotLeft;
+    if (roomR < 110 && mascotLeft > 40) mascotLeft -= 36;
+    else if (mascotLeft < 110 && roomR > 40) mascotLeft += 36;
+    mascotLeft = Math.max(4, Math.min(mascotLeft, popW - 50));
+    mascot.style.marginLeft = n(mascotLeft) + 'px';
+    var mr = mascot.getBoundingClientRect();
+    var mcx = mr.left - pr.left + mr.width / 2;
+    var mcy = mr.top - pr.top + mr.height / 2;
+    var end = edge(sl, st, sw, sh, mcx, mcy);
+    var ang = Math.atan2(end.y - mcy, end.x - mcx);
+    drawLine(W, H, mcx + Math.cos(ang) * 26, mcy + Math.sin(ang) * 26, end.x, end.y);
+    root.dataset.step = String(i + 1);
+    persist(i);
+    idx = i;
+    return true;
+  }
+  function finish() {
+    root.classList.remove('on');
+    root.setAttribute('aria-hidden', 'true');
+    try {
+      sessionStorage.setItem(SEEN, '1');
+      sessionStorage.removeItem(ACTIVE);
+      sessionStorage.removeItem(STEPKEY);
+    } catch (e) {}
+  }
+  document.getElementById('gskip').addEventListener('click', function (e) {
+    e.preventDefault(); e.stopPropagation(); finish();
+  });
+  nextBtn.addEventListener('click', function (e) {
+    e.preventDefault(); e.stopPropagation();
+    if (leaving) return;
+    if (idx >= STEPS.length - 1) { finish(); return; }
+    var next = idx + 1;
+    if (STEPS[next].page !== PAGE) {
+      leaving = true;
+      persist(next);
+      location.href = STEPS[next].page;
+      return;
+    }
+    place(next);
+  });
+  window.addEventListener('resize', function () { if (root.classList.contains('on')) place(idx); });
+  window.addEventListener('load', function () { if (root.classList.contains('on')) place(idx); });
+  requestAnimationFrame(function () {
+    var force = false, seen = false, active = false, step = 0;
+    try { force = new URLSearchParams(location.search).get('guide') === '1'; } catch (e) {}
+    try { seen = sessionStorage.getItem(SEEN) === '1'; } catch (e) {}
+    try { active = sessionStorage.getItem(ACTIVE) === '1'; } catch (e) {}
+    try { step = parseInt(sessionStorage.getItem(STEPKEY) || '0', 10); } catch (e) {}
+    if (isNaN(step)) step = 0;
+    if (force && PAGE === 'home.html') {
+      step = 0;
+      active = true;
+    } else if (!active) {
+      if (PAGE !== 'home.html' || seen) return;
+      step = 0;
+      active = true;
+    }
+    if (step < 0 || step >= STEPS.length || STEPS[step].page !== PAGE) return;
+    if (!place(step)) return;
+    root.classList.add('on');
+    root.setAttribute('aria-hidden', 'false');
+    if (force) { try { history.replaceState(null, '', location.pathname); } catch (e) {} }
+  });
+})();
 </script>
 <script>lucide.createIcons();</script>
 </body>
