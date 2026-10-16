@@ -298,6 +298,8 @@ body.side-off .main { padding-left: 16px; }
 .okbox .oi.blue { background: var(--pl); color: var(--p); } .okbox b { display: block; font-size: 16px; margin-bottom: 4px; }
 [data-item] { transition: box-shadow .3s, opacity .25s, transform .25s; }
 [data-item].flash { box-shadow: 0 0 0 2px var(--p2); } .gone { opacity: 0; transform: scale(.96); }
+.fi.err .in { border-color: var(--red); box-shadow: 0 0 0 3px rgba(244,63,81,.12); }
+.ferr { display: flex; align-items: center; gap: 4px; color: var(--red); font-size: 12px; margin-top: 4px; }
 
 .modal.certwide { width: 920px; }
 .modal.certwide .modal-b { background: #F6F1E6; }
@@ -682,12 +684,35 @@ function refreshMoves(box) {
     if (up) up.classList.toggle('dis', i === 0); if (dn) dn.classList.toggle('dis', i === items.length - 1); if (ix) ix.textContent = i + 1;
   });
 }
+// —— 必填校验：data-check 按钮提交前检查所在弹窗内可见的 .fi[data-must]，空则标红并拦截（只改当前页面）——
+function fieldVal(fi) { const f = fi.querySelector('.in input, .in textarea'); return f ? f.value.trim() : ''; }
+function markErr(fi, msg) {
+  fi.classList.add('err');
+  let e = fi.querySelector('.ferr');
+  if (!e) { e = document.createElement('div'); e.className = 'ferr'; fi.querySelector('.ctl').appendChild(e); }
+  e.textContent = msg;
+}
+function clearErr(fi) { fi.classList.remove('err'); const e = fi.querySelector('.ferr'); if (e) e.remove(); }
+function checkMust(btn) {
+  const box = btn.closest('.modal') || document;
+  let first = null;
+  $$('.fi[data-must]', box).forEach(fi => {
+    if (fi.hidden || fi.closest('[hidden]')) { clearErr(fi); return; }
+    if (fieldVal(fi)) { clearErr(fi); return; }
+    markErr(fi, fi.dataset.must); first = first || fi;
+  });
+  if (first) { const f = first.querySelector('input, textarea'); if (f) f.focus(); first.scrollIntoView({ block: 'nearest' }); }
+  return !first;
+}
+document.addEventListener('input', e => { const fi = e.target.closest('.fi.err'); if (fi && e.target.value.trim()) clearErr(fi); });
 // —— 统一点击处理（先于 SIDE_JS 的通用处理执行）——
 let confirmSrc = null;
 document.addEventListener('click', e => {
   const T = e.target;
   if (pop && !pop.contains(T)) { const same = T.closest('[data-opts], [data-date]') === popFor; closePop(); if (same) { e.stopImmediatePropagation(); return; } }
   const stop = () => { e.preventDefault(); e.stopImmediatePropagation(); };
+  const chk = T.closest('[data-check]');
+  if (chk && !checkMust(chk)) return stop();
   const x = T.closest('[data-x]');
   if (x) { const el = x.closest('[data-multi]'); renderMulti(el, el._vals.filter(v => v + '×' !== x.parentElement.textContent)); return stop(); }
   const dd = T.closest('[data-opts]'); if (dd) { openSelect(dd); return stop(); }
